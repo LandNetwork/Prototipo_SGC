@@ -1,0 +1,470 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Mapa</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        #map {
+            min-height: 1123px;
+            width: 100%;
+            border: 1px solid black;
+            padding: 0;
+            background-color: #FFF;
+        }
+
+        .polygon-label {
+            background: none;
+            border: none;
+            box-shadow: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: #4B0082;
+            text-shadow:
+                -1px -1px 0 #fff,
+                1px -1px 0 #fff,
+                -1px 1px 0 #fff,
+                1px 1px 0 #fff;
+        }
+
+        .neighbor-label {
+            background: none;
+            border: none;
+            box-shadow: none;
+            font-size: 10px;
+            font-weight: normal;
+            color: gray;
+            text-shadow:
+                -2px -2px 0 #fff,
+                2px -2px 0 #fff,
+                -2px 2px 0 #fff,
+                2px 2px 0 #fff;
+        }
+
+        .point-label {
+            /*background: none;*/
+            margin: 0;
+            padding: 0;
+            border: none;
+            box-shadow: none;
+            font-size: 14px;
+            font-weight: normal;
+            color: rgb(11, 126, 45);
+            text-shadow: 3px 3px 5px #FFF;
+        }
+
+
+
+
+        .leaflet-grid-label {
+            color: black;
+            font-size: 12px;
+            margin: 0;
+            padding: 0;
+            text-shadow: 1px 1px 2px white, -1px -1px 2px white, 1px -1px 2px white, -1px 1px 2px white;
+        }
+
+        .leaflet-grid-line {
+            stroke: #CCC;
+            stroke-opacity: 0.5;
+            stroke-width: 1;
+        }
+
+        .label-top-left {
+            transform: translate(-50%, -100%);
+        }
+
+        .label-top-right {
+            transform: translate(50%, -100%);
+        }
+
+        .label-bottom-left {
+            transform: translate(-50%, 0%);
+        }
+
+        .label-bottom-right {
+            transform: translate(50%, 0%);
+        }
+
+        .leaflet-control-scale {
+            background-color: #FFF;
+            color: #fff;
+            border: 1px solid #ccc;
+            margin-bottom: 15px !important;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .leaflet-control-custom-scale {
+            background-color: #FFF;
+            color: #333;
+            border: 1px solid #fff;
+            margin-bottom: 20px;
+            padding: 5px;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .leaflet-control-custom-scale .scale-text {
+            display: block;
+            margin: 3px;
+            font-size: 12px;
+        }
+
+        .info.legend {
+            background-color: white;
+            padding: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+            line-height: 1.4;
+            color: #333;
+        }
+
+        .info.legend h4 {
+            margin: 0 0 5px;
+            color: #333;
+            font-weight: bold;
+        }
+    </style>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.6.2/proj4.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4leaflet/1.0.1/proj4leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/5.1.6/turf.min.js"></script>
+</head>
+
+<body>
+    <div id="map"></div>
+    <script>
+        var crs9377 = new L.Proj.CRS('EPSG:9377', '+proj=tmerc +lat_0=4 +lon_0=-73 +k=0.9992 +x_0=5000000 +y_0=2000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs', {
+            resolutions: [8192, 4096, 2048, 1024, 512, 256, 128, 64, 32, 16, 8, 4, 2, 1, 0.5, 0.25],
+            origin: [-5120900.0, 9998100.0]
+        });
+
+        var map = L.map('map', {
+            center: [4, -73],
+            zoom: 10,
+            zoomControl: false,
+            attributionControl: false
+        });
+
+
+        L.control.scale({
+            position: 'bottomleft',
+            imperial: false,
+            maxWidth: 200
+        }).addTo(map);
+
+        L.Control.CustomScale = L.Control.extend({
+            onAdd: function (map) {
+                var div = L.DomUtil.create('div', 'leaflet-control-custom-scale');
+                this.scaleText = L.DomUtil.create('div', 'scale-text', div);
+                this.updateScaleText(map);
+
+                map.on('zoomend', this.updateScaleText, this);
+
+                return div;
+            },
+
+            updateScaleText: function () {
+                var scale = this.calculateScale();
+                this.scaleText.innerHTML = 'Escala: 1:' + scale.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            },
+
+            calculateScale: function () {
+                var center = map.getCenter();
+                var pointC = map.latLngToContainerPoint(center);
+                var pointX = L.point(pointC.x + 100, pointC.y);
+                var latLngC = map.containerPointToLatLng(pointC);
+                var latLngX = map.containerPointToLatLng(pointX);
+                var distance = latLngC.distanceTo(latLngX);
+                var scale = distance * 100;
+
+                return scale;
+            }
+        });
+
+        //elcala numérica, no se agrega ya que la imagen del mapa puede ser redimensionada en el pdf final
+        //map.addControl(new L.Control.CustomScale({ position: 'bottomleft' }));
+
+        /*
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19
+        }).addTo(map);
+        */
+
+        var polygonStyle = {
+            color: '#4B0082',
+            weight: 3,
+            opacity: 1,
+            fillColor: '#E1BEE7',
+            fillOpacity: 0.5
+        };
+        var neighborPolygonStyle = {
+            color: '#CCCCCC',
+            weight: 1,
+            opacity: 1,
+            fillColor: '#DDDDDD',
+            fillOpacity: 0.5
+        };
+        var colindanciaStyle = {
+            radius: 8,
+            fillColor: "green",
+            color: "black",
+            weight: 2,
+            opacity: 1,
+            fillOpacity: 1
+        };
+
+        var polygon = "<%= Terreno %>";
+        var neighbors = "<%= Neighbors %>";
+        var colindancias = "<%= Colindancias %>";
+
+        var geoJsonLayer = L.geoJSON(polygon, {
+            style: polygonStyle,
+            onEachFeature: function (feature, layer) {
+                if (feature.properties && feature.properties.predio) {
+                    layer.bindTooltip(feature.properties.predio, {
+                        permanent: true,
+                        direction: 'center',
+                        className: 'polygon-label'
+                    }).openTooltip();
+                }
+            }
+        }).addTo(map);
+
+        map.fitBounds(geoJsonLayer.getBounds());
+
+        function addNeighborPolygons(neighbors) {
+            var neighborLayer = L.geoJSON(neighbors, {
+                style: neighborPolygonStyle,
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.predio) {
+                        var area = turf.area(feature);
+                        var zoom = map.getZoom();
+                        if (area / Math.pow(2, 20 - zoom) > 500) {
+                            layer.bindTooltip(feature.properties.predio, {
+                                permanent: true,
+                                direction: 'center',
+                                className: 'neighbor-label'
+                            }).openTooltip();
+
+                            // Aseguramos que el tooltip esté abierto antes de ajustar la posición
+                            layer.on('tooltipopen', function () {
+                                adjustTooltipPosition(layer);
+                            });
+                        }
+                    }
+                }
+            }).addTo(map);
+            return neighborLayer;
+        }
+
+        function updateNeighborLabels() {
+            map.eachLayer(function (layer) {
+                if (layer instanceof L.GeoJSON && layer !== geoJsonLayer && layer !== colindanciasLayer) {
+                    map.removeLayer(layer);
+                }
+            });
+            var neighborLayer = addNeighborPolygons(neighbors);
+            geoJsonLayer.bringToFront();
+            if (colindanciasLayer) {
+                colindanciasLayer.bringToFront();
+            }
+            adjustLabels(neighborLayer);
+        }
+
+        function adjustTooltipPosition(layer) {
+            var tooltip = layer.getTooltip();
+            if (tooltip) {
+                var latLng = tooltip.getLatLng();
+                var bounds = layer.getBounds();
+                var labelBounds = L.latLngBounds(
+                    map.containerPointToLatLng(map.latLngToContainerPoint(latLng).subtract([tooltip._container.offsetWidth / 2, tooltip._container.offsetHeight / 2])),
+                    map.containerPointToLatLng(map.latLngToContainerPoint(latLng).add([tooltip._container.offsetWidth / 2, tooltip._container.offsetHeight / 2]))
+                );
+
+                if (!bounds.contains(labelBounds.getSouthWest()) || !bounds.contains(labelBounds.getNorthEast())) {
+                    var newLatLng = bounds.getCenter();
+                    tooltip.setLatLng(newLatLng);
+                }
+            }
+        }
+
+        function adjustLabels(layer) {
+            var polygons = {}; // Para agrupar los tooltips por geometría
+
+            layer.eachLayer(function (subLayer) {
+                var geometry = JSON.stringify(subLayer.feature.geometry);
+                if (!polygons[geometry]) {
+                    polygons[geometry] = [];
+                }
+                polygons[geometry].push(subLayer);
+            });
+
+            for (var geometry in polygons) {
+                if (polygons.hasOwnProperty(geometry)) {
+                    var labelPositions = [];
+                    polygons[geometry].forEach(function (subLayer) {
+                        if (subLayer.getTooltip()) {
+                            var tooltip = subLayer.getTooltip();
+                            var pos = map.latLngToContainerPoint(tooltip.getLatLng());
+                            var overlapping = labelPositions.some(function (p) {
+                                return Math.abs(p.x - pos.x) < 50 && Math.abs(p.y - pos.y) < 10;
+                            });
+                            if (overlapping) {
+                                var newPos = pos;
+                                while (overlapping) {
+                                    newPos = L.point(newPos.x, newPos.y + 10);
+                                    overlapping = labelPositions.some(function (p) {
+                                        return Math.abs(p.x - newPos.x) < 50 && Math.abs(p.y - newPos.y) < 10;
+                                    });
+                                }
+                                tooltip.setLatLng(map.containerPointToLatLng(newPos));
+                            }
+                            labelPositions.push(newPos || pos);
+                        }
+                    });
+                }
+            }
+        }
+
+        var neighborLayer;
+        if (neighbors != "<%= " + "Neighbors" + " %>") {
+            neighborLayer = addNeighborPolygons(neighbors);
+        }
+
+        var colindanciasLayer;
+        if (colindancias != "<%= " + "Colindancias" + " %>") {
+
+            colindanciasLayer = L.geoJSON(colindancias, {
+                pointToLayer: function (feature, latlng) {
+                    return L.circleMarker(latlng, colindanciaStyle);
+                },
+                onEachFeature: function (feature, layer) {
+                    if (feature.properties && feature.properties.id) {
+                        layer.bindTooltip(feature.properties.id.toString(), {
+                            permanent: true,
+                            direction: 'center',
+                            className: 'point-label',
+                            offset: [20, 0]
+                        }).openTooltip();
+                    }
+                }
+            }).addTo(map);
+            colindanciasLayer.bringToFront();
+        }
+
+
+
+        var gridLayers = [];
+        var labelLayers = [];
+
+        function roundToNiceNumber(value, range) {
+            var digits = Math.floor(Math.log10(range)) - 1;
+            var roundFactor = Math.pow(10, digits);
+            return Math.round(value / roundFactor) * roundFactor;
+        }
+
+        function formatNumberWithCommas(number) {
+            return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        }
+
+        function addGrid(map) {
+            gridLayers.forEach(layer => map.removeLayer(layer));
+            labelLayers.forEach(layer => map.removeLayer(layer));
+            gridLayers = [];
+            labelLayers = [];
+
+            var bounds = map.getBounds();
+            var sw = L.latLng(bounds.getSouthWest().lat, bounds.getSouthWest().lng);
+            var ne = L.latLng(bounds.getNorthEast().lat, bounds.getNorthEast().lng);
+
+            // Proyectar a EPSG:9377
+            var sw9377 = crs9377.project(sw);
+            var ne9377 = crs9377.project(ne);
+
+            var startLat = sw9377.y;
+            var endLat = ne9377.y;
+            var startLng = sw9377.x;
+            var endLng = ne9377.x;
+
+            var latRange = endLat - startLat;
+            var lngRange = endLng - startLng;
+            var latStep = roundToNiceNumber(latRange / 5, latRange);
+            var lngStep = roundToNiceNumber(lngRange / 5, lngRange);
+
+            var latLines = [];
+            for (var lat = Math.ceil(startLat / latStep) * latStep; lat < endLat; lat += latStep) {
+                latLines.push(lat);
+            }
+
+            var lngLines = [];
+            for (var lng = Math.ceil(startLng / lngStep) * lngStep; lng < endLng; lng += lngStep) {
+                lngLines.push(lng);
+            }
+
+            latLines.forEach(lat => {
+                var latLng1 = crs9377.unproject(L.point(startLng, lat));
+                var latLng2 = crs9377.unproject(L.point(endLng, lat));
+                var horizontalLine = L.polyline([latLng1, latLng2], { className: 'leaflet-grid-line' }).addTo(map);
+                gridLayers.push(horizontalLine);
+
+                var labelLatStart = L.marker(map.unproject(map.project(latLng1).subtract([-30, 10])), { icon: L.divIcon({ className: 'leaflet-grid-label label-top-left', html: formatNumberWithCommas(lat), iconSize: [50, 20] }) }).addTo(map);
+                var labelLatEnd = L.marker(map.unproject(map.project(latLng2).subtract([30, 10])), { icon: L.divIcon({ className: 'leaflet-grid-label label-top-right', html: formatNumberWithCommas(lat), iconSize: [50, 20] }) }).addTo(map);
+                labelLayers.push(labelLatStart, labelLatEnd);
+            });
+
+            lngLines.forEach(lng => {
+                var latLng1 = crs9377.unproject(L.point(lng, startLat));
+                var latLng2 = crs9377.unproject(L.point(lng, endLat));
+                var verticalLine = L.polyline([latLng1, latLng2], { className: 'leaflet-grid-line' }).addTo(map);
+                gridLayers.push(verticalLine);
+
+                var labelLngStart = L.marker(map.unproject(map.project(latLng1).add([10, -20])), { icon: L.divIcon({ className: 'leaflet-grid-label label-bottom-left', html: formatNumberWithCommas(lng), iconSize: [50, 20] }) }).addTo(map);
+                var labelLngEnd = L.marker(map.unproject(map.project(latLng2).add([10, 10])), { icon: L.divIcon({ className: 'leaflet-grid-label label-bottom-right', html: formatNumberWithCommas(lng), iconSize: [50, 20] }) }).addTo(map);
+                labelLayers.push(labelLngStart, labelLngEnd);
+            });
+        }
+
+        map.on('load moveend', function () {
+            addGrid(map);
+            updateNeighborLabels();
+        });
+
+        map.on('zoomend', function () {
+            updateNeighborLabels();
+        });
+
+        map.fire('load');
+
+        var legend = L.control({ position: 'bottomright' });
+
+        legend.onAdd = function (map) {
+            var div = L.DomUtil.create('div', 'info legend');
+            div.innerHTML = `
+                <h4>Convenciones</h4>
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <i style="background: #E1BEE7; width: 15px; height: 15px; display: inline-block; margin-right: 8px; border: 3px solid #4B0082;"></i>
+                    <span>Predio Seleccionado</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 4px;">
+                    <i style="background: #CCCCCC; width: 18px; height: 18px; display: inline-block; margin-right: 8px;"></i>
+                    <span>Predios catastrales</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <i style="background: green; width: 18px; height: 18px; display: inline-block; margin-right: 8px; border-radius: 50%;"></i>
+                    <span>Puntos de colindancia</span>
+                </div>
+            `;
+            return div;
+        };
+
+        legend.addTo(map);
+    </script>
+</body>
+
+</html>

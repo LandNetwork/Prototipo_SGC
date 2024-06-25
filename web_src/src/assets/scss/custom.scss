@@ -1,0 +1,101 @@
+.cy {
+    min-height: 600px;
+}
+
+
+.parcel-list {
+    cursor: default;
+}
+
+.choices__button {
+    padding: initial !important;
+    padding-left: 16px !important;
+    color: unset !important;
+    background-color: unset !important;
+    box-shadow: unset !important;
+    margin-right: 0 !important;
+    vertical-align: middle;
+}
+
+#selected-parcels {
+    border: unset;
+}
+
+.sd-html .sd-error {
+    display: block;
+    padding: var(--sjs-base-unit, var(--base-unit, 8px)) calc(1.5*(var(--sjs-base-unit, var(--base-unit, 8px))));
+    border-radius: var(--sjs-corner-radius, 4px);
+    line-height: var(--sjs-font-size, 16px);
+    font-size: calc(0.75*(var(--sjs-font-size, 16px)));
+    font-weight: 600;
+    text-align: left;
+    color: var(--sjs-special-red, var(--red, #e60a3e));
+    white-space: normal;
+    width: 100%;
+    background-color: var(--sjs-special-red-light, var(--red-light, rgba(230, 10, 62, 0.1)));
+    box-sizing: border-box;
+}
+
+
+.ui-datepicker {
+    font-size: 16px;
+}
+
+
+.ui-datepicker td {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.ui-datepicker .ui-datepicker-header {
+    background-color: var(--vz-primary) !important;
+    background: unset;
+    color: #333333;
+}
+
+.ui-widget-header a {
+    color: #ffffff;
+}
+
+.ui-state-default,
+.ui-widget-content .ui-state-default {
+    background: #FFF !important;
+    border: 1px solid var(--vz-light-border-subtle);
+}
+
+.ui-state-highlight,
+.ui-widget-content .ui-state-highlight,
+.ui-widget-header .ui-state-highlight {
+    background: var(--vz-light) !important;
+    border: 1px solid var(--vz-link-color) !important;
+    color: var(--vz-link-color) !important;
+}
+
+.ui-state-active,
+.ui-widget-content .ui-state-active,
+.ui-widget-header .ui-state-active,
+a.ui-button:active,
+.ui-button:active,
+.ui-button.ui-state-active:hover {
+    background: var(--vz-primary) !important;
+    border: 1px solid var(--vz-light);
+    color: #FFF !important;
+
+}
+
+.ui-datepicker .ui-datepicker-prev,
+.ui-datepicker .ui-datepicker-next {
+    cursor: pointer;
+}
+
+.leaflet-map{
+    height: 100%;
+}
+
+div.error:has(> select) {
+    background-color:var(--sjs-special-red-light, var(--red-light, rgba(230, 10, 62, 0.1)))
+}
+
+#timeline {
+    background-color: var(--vz-body-bg);
+}

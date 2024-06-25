@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reporte</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .map {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        img {
+            height: 60vh;
+        }
+
+
+        .datos-predio-section {
+            margin-top: 20px;
+        }
+
+        .datos-predio-section table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .datos-predio-section th,
+        .datos-predio-section td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .datos-predio-section th {
+            background-color: #f2f2f2;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table#coordinateTable {
+            margin-top: 20px;
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        tbody#coordinateTable tr:nth-child(odd) {
+            background-color: #c9c9c9;
+        }
+
+        tbody#coordinateTable tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .new-page {
+            page-break-before: always;
+        }
+
+        .two-column {
+            font-size: 12px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
+
+        .column {
+            flex: 0 0 48%;
+            box-sizing: border-box;
+        }
+
+        .column table {
+            width: 100%;
+        }
+
+
+        .linderos-section {
+            margin-top: 40px;
+        }
+
+        .linderos-title {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .lindero-item {
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Reporte plano predial</h1>
+    <div class="map" style="border: 1px solid #333;">
+        {{#if (getImageById subReportImages "mainMap")}}
+        <img src='data:image/png;base64,{{getImageById subReportImages "mainMap"}}' alt="Mapa">
+        {{/if}}
+    </div>
+    <h2>Datos del predio</h2>
+    <table>
+        <tr>
+            <th>Nombre del Predio</th>
+            <td>{{nombre_predio}}</td>
+        </tr>
+        <tr>
+            <th>Cédula Catastral FMI</th>
+            <td>{{cedula_catastral_fmi}}</td>
+        </tr>
+        <tr>
+            <th>Interesados</th>
+            <td>{{interesados}}</td>
+        </tr>
+    </table>
+
+    <div class="new-page ">
+        <div class="linderos-section">
+            <h2 class="linderos-title">Linderos</h2>
+            {{#each (getQueryResultById queryResults "linderos")}}
+            <div class="lindero-item">
+                <strong>{{this.ubicacion}}</strong> - Partiendo desde el punto {{this.desde}} (N={{this.yi}},
+                E={{this.xi}}) en sentido {{this.sentido}}
+                {{iff this.nodos "en línea quebrada pasando por los puntos " "en línea recta"}}
+                {{#if this.nodos}} {{this.nodos}} {{/if}}
+                hasta llegar al punto {{this.hasta}} (N={{this.yf}}, E={{this.xf}}), con una distancia de
+                {{this.distancia}} metros,
+                colinda con {{this.gc_predio}} en cabeza de {{this.interesado}}.
+            </div>
+            {{/each}}
+        </div>
+    </div>
+
+    {{#if (getQueryResultById queryResults "coordinateTable")}}
+    {{#each (chunkArray (getQueryResultById queryResults "coordinateTable") 30)}}
+    <div class="new-page ">
+        <h2>Cuadro de Coordenadas</h2>
+        <div class="two-column">
+            <div class="column">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">Punto</th>
+                            <th style="width: 35%;">X</th>
+                            <th style="width: 35%;">Y</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each this.left}}
+                        <tr>
+                            <td>{{this.id}}</td>
+                            <td>{{this.x}}</td>
+                            <td>{{this.y}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+            <div class="column">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 30%;">Punto</th>
+                            <th style="width: 35%;">X</th>
+                            <th style="width: 35%;">Y</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each this.right}}
+                        <tr>
+                            <td>{{this.id}}</td>
+                            <td>{{this.x}}</td>
+                            <td>{{this.y}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {{/each}}
+    {{/if}}
+</body>
+
+</html>

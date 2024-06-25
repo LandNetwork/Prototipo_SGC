@@ -1,0 +1,69 @@
+@@include("partials/main.html")
+
+<head>
+
+    @@include("partials/title-meta.html", {"title": "Inicio"})
+
+
+    
+    <link href="assets/libs/survey-jquery/defaultV2.min.css" type="text/css" rel="stylesheet">
+    <link href="assets/libs/jquery-ui/themes/base/jquery-ui.min.css" type="text/css" rel="stylesheet">
+
+    @@include("partials/head-css.html")
+
+
+</head>
+
+<body>
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+
+        @@include("partials/menu.html")
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div id="content" class="container-fluid">
+                    
+                    @@include("partials/page-title.html", {"pagetitle": "Inicio", "parentlink":"index.html", "title":
+                    "Interesados"})
+                    
+                    <div id="tray"></div>
+                    
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+
+            @@include("partials/footer.html")
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+
+
+
+    
+    <script type='text/javascript' src='assets/libs/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='assets/libs/survey-jquery/survey.jquery.min.js'></script>
+    <script type='text/javascript' src='assets/libs/jquery-ui/jquery-ui.min.js'></script>
+    
+    
+    <script type='text/javascript' src='assets/libs/choices.js/public/assets/scripts/choices.min.js'></script>
+    @@include("partials/vendor-scripts.html")
+
+
+
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+
+    
+    <script type="module" src="assets/js/pages/interesados/main.js"></script>
+</body>
+
+</html>

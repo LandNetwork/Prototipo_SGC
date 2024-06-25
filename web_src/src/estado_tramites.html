@@ -1,0 +1,53 @@
+@@include("partials/main.html")
+
+<head>
+
+    @@include("partials/title-meta.html", {"title": "Inicio"})
+    @@include("partials/head-css.html")
+
+
+</head>
+
+<body>
+
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+
+        @@include("partials/menu.html")
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+
+            <div class="page-content">
+                <div id="content" class="container-fluid">
+
+                    @@include("partials/page-title.html", {"pagetitle": "Estado de trámites", "parentlink":"index.html", "title":
+                    "Estado de trámites"})
+
+                    
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+
+            @@include("partials/footer.html")
+        </div>
+        <!-- end main content-->
+
+    </div>
+    <!-- END layout-wrapper -->
+    
+    <script type='text/javascript' src='assets/libs/choices.js/public/assets/scripts/choices.min.js'></script>
+    
+    @@include("partials/vendor-scripts.html")
+
+
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/pages/estado_tramites/main.js"></script>
+
+</body>
+
+</html>

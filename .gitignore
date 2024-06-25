@@ -1,0 +1,11 @@
+.env
+
+node_modules/
+web/
+web_src/node_modules/
+web_src/yarn.lock
+web_src/src/assets/js/components/custom/loader_d.js
+web_src/src/assets/js/components/custom/loader_d.js.LICENSE.txt
+
+/.fleet
+

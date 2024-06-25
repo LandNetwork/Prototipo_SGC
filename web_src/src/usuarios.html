@@ -1,0 +1,67 @@
+@@include("partials/main.html")
+
+<head>
+    @@include("partials/title-meta.html", {"title": "Inicio"})
+
+    <link href="assets/libs/survey-jquery/defaultV2.min.css" type="text/css" rel="stylesheet">
+    <link href="assets/libs/jquery-ui/themes/base/jquery-ui.min.css" type="text/css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+
+    @@include("partials/head-css.html")
+</head>
+
+<body>
+    <!-- Begin page -->
+    <div id="layout-wrapper">
+        @@include("partials/menu.html")
+
+        <!-- ============================================================== -->
+        <!-- Start right Content here -->
+        <!-- ============================================================== -->
+        <div class="main-content">
+            <div class="page-content">
+                <div id="content" class="container-fluid">
+                    @@include("partials/page-title.html", {"pagetitle": "Inicio", "parentlink":"index.html", "title": "Usuarios y Roles"})
+
+                    <!-- Tab navigation -->
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="usuarios-tab" data-toggle="tab" href="#usuarios" role="tab" aria-controls="usuarios" aria-selected="true">Usuarios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="roles-tab" data-toggle="tab" href="#roles" role="tab" aria-controls="roles" aria-selected="false">Roles</a>
+                        </li>
+                    </ul>
+
+                    <!-- Tab content -->
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="usuarios" role="tabpanel" aria-labelledby="usuarios-tab">
+                            <div id="uTray"></div>
+                        </div>
+                        <div class="tab-pane fade" id="roles" role="tabpanel" aria-labelledby="roles-tab">
+                            <div id="rTray"></div>
+                        </div>
+                    </div>
+                </div>
+                <!-- container-fluid -->
+            </div>
+            <!-- End Page-content -->
+
+            @@include("partials/footer.html")
+        </div>
+        <!-- end main content-->
+    </div>
+    <!-- END layout-wrapper -->
+
+    <script type='text/javascript' src='assets/libs/jquery/jquery.min.js'></script>
+    <script type='text/javascript' src='assets/libs/survey-jquery/survey.jquery.min.js'></script>
+    <script type='text/javascript' src='assets/libs/jquery-ui/jquery-ui.min.js'></script>
+    <script type='text/javascript' src='assets/libs/choices.js/public/assets/scripts/choices.min.js'></script>
+    @@include("partials/vendor-scripts.html')
+
+    <!-- App js -->
+    <script src="assets/js/app.js"></script>
+    <script type="module" src="assets/js/pages/usuarios/main.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

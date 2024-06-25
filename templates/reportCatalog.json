@@ -1,0 +1,70 @@
+{
+    "plano_predial": {
+        "subReports": [
+            {
+                "id": "mainMap",
+                "type": "map",
+                "template": "map_template.html",
+                "layers": [
+                    {
+                        "name": "Terreno",
+                        "query": "getTerrenoAsGeoJSON",
+                        "params": [
+                            "id",
+                            true
+                        ]
+                    },
+                    {
+                        "name": "Neighbors",
+                        "query": "getTerrenoAsGeoJSON",
+                        "params": [
+                            "id",
+                            false
+                        ]
+                    },
+                    {
+                        "name": "Colindancias",
+                        "query": "getPuntosColindancia",
+                        "params": [
+                            "id",
+                            1,
+                            4
+                        ]
+                    }
+                ]
+            },
+            {
+                "id": "coordinateTable",
+                "type": "table",
+                "query": "getCoordinateTable",
+                "params": [
+                    "id",
+                    1,
+                    4
+                ]
+            },
+            {
+                "id": "linderos",
+                "type": "table",
+                "query": "getLinderos",
+                "params": [
+                    "id",
+                    1,
+                    4
+                ]
+            }
+        ]
+    },
+    "otro_reporte": {
+        "subReports": [
+            {
+                "type": "map",
+                "template": "otro_map_template.html"
+            },
+            {
+                "type": "chart",
+                "template": "chart_template.html"
+            }
+        ]
+    }
+}
